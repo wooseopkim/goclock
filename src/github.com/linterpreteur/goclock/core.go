@@ -60,5 +60,6 @@ func timeOffset(url string) (time.Duration, int) {
             // fmt.Println("(nanosecOffset + margin) equals", time.Duration(nanosecOffset + margin))
 	    }
     }
+    _ = margin
     return records[start].estimatedDifference(nanosecOffset /* + margin */), reliability
 }
