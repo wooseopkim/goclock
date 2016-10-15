@@ -34,6 +34,7 @@ func timeOffset(url string) (time.Duration, int) {
         reliability++;
         records = append(records, cmp)
         
+        /*
         fmt.Printf("%02d:%02d:%02d:%09d",
             cmp.client.Hour(), cmp.client.Minute(),
             cmp.client.Second(), cmp.client.Nanosecond())
@@ -41,6 +42,7 @@ func timeOffset(url string) (time.Duration, int) {
         fmt.Printf("%02d:%02d:%02d:%09d\n",
                 cmp.remote.Hour(), cmp.remote.Minute(),
                 cmp.remote.Second(), cmp.remote.Nanosecond())
+        */
     }
     
     if reliability == 0 {
