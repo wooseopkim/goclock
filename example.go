@@ -10,10 +10,10 @@ func main() {
     clock := goclock.New(goclock.Request{
         Url : url(),
         ClientTime : clientTime(),
-    }, func (this *goclock.Goclock) {
-        fmt.Println("offset is", this.Offset)
-        fmt.Println("border is", time.Second - this.Offset)
-        fmt.Println("reliability is", this.Reliability)
+    }, func (g *goclock.Goclock) {
+        fmt.Println("offset is", g.Offset)
+        fmt.Println("border is", time.Second - g.Offset)
+        fmt.Println("reliability is", g.Reliability)
     })
     tick(*clock)
 }

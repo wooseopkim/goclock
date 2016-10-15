@@ -21,22 +21,22 @@ type Request struct {
 type Callback func (*Goclock)
 
 func New(request Request, callback Callback) *Goclock {
-    this := &Goclock{}
-    this.initialize(request, callback)
-    return this
+    g := &Goclock{}
+    g.initialize(request, callback)
+    return g
 }
 
-func (this *Goclock) Initialize(request Request, callback Callback) {
-    this.initialize(request, callback)
+func (g *Goclock) Initialize(request Request, callback Callback) {
+    g.initialize(request, callback)
 }
 
-func (this Goclock) Time() time.Time {
-    return time.Now().Add(this.Offset)
+func (g Goclock) Time() time.Time {
+    return time.Now().Add(g.Offset)
 }
 
-func (this *Goclock) initialize(request Request, callback Callback) {
+func (g *Goclock) initialize(request Request, callback Callback) {
     offset, reliability := timeOffset(request.Url)
-    this.Offset = offset
-    this.Reliability = reliability
-    callback(this)
+    g.Offset = offset
+    g.Reliability = reliability
+    callback(g)
 }

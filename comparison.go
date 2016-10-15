@@ -71,13 +71,13 @@ func compare(url string) (comparison, error) {
     return compareDelayed(url, immediately)
 }
 
-func (this comparison) remoteChanged(that comparison) bool {
-    return this.remote.Second() != that.remote.Second()
+func (c comparison) remoteChanged(that comparison) bool {
+    return c.remote.Second() != that.remote.Second()
 }
 
-func (this comparison) estimatedDifference(estimatedBorderNanos int) time.Duration {
-    client := this.client
-    remote := this.remote
+func (c comparison) estimatedDifference(estimatedBorderNanos int) time.Duration {
+    client := c.client
+    remote := c.remote
     if client.Nanosecond() < estimatedBorderNanos {
         remote = remote.Add(time.Second)
     }
