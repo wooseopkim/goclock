@@ -7,10 +7,10 @@ import (
 const trial = 4
 
 type Goclock struct {
-    Source string
-    Offset time.Duration
+    Source string `json:"source"`
+    Offset time.Duration `json:"offset"`
     // 0 is the worst; bigger means better
-    Reliability int
+    Reliability int `json:"reliaibility"`
 }
 
 type Request struct {
@@ -18,25 +18,23 @@ type Request struct {
     ClientTime time.Time
 }
 
-type Callback func (*Goclock)
-
-func New(request Request, callback Callback) *Goclock {
+func New(request Request) *Goclock {
     g := &Goclock{}
-    g.initialize(request, callback)
+    g.initialize(request)
     return g
 }
 
-func (g *Goclock) Initialize(request Request, callback Callback) {
-    g.initialize(request, callback)
+func (g *Goclock) Initialize(request Request) {
+    g.initialize(request)
 }
 
 func (g Goclock) Time() time.Time {
     return time.Now().Add(g.Offset)
 }
 
-func (g *Goclock) initialize(request Request, callback Callback) {
-    offset, reliability := timeOffset(request.Url)
+func (g *Goclock) initialize(request Request) {
+    g.Source = request.Url
+    offset, reliability := timeOffset(g.Source)
     g.Offset = offset
     g.Reliability = reliability
-    callback(g)
 }

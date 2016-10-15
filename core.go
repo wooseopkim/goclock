@@ -23,7 +23,7 @@ func timeOffset(url string) (time.Duration, int) {
                 timeToSleepFor += interval
             }
         }
-        fmt.Println("Sleep", timeToSleepFor)
+        // fmt.Println("Sleep", timeToSleepFor)
         
         cmp, err := compareDelayed(url, timeToSleepFor)
         if err != nil {
