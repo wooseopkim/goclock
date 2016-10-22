@@ -18,23 +18,27 @@ type Request struct {
     ClientTime time.Time
 }
 
-func New(request Request) *Goclock {
+func New(request Request) (*Goclock, error) {
     g := &Goclock{}
-    g.initialize(request)
-    return g
+    err := g.initialize(request)
+    return g, err
 }
 
-func (g *Goclock) Initialize(request Request) {
-    g.initialize(request)
+func (g *Goclock) Initialize(request Request) error {
+    return g.initialize(request)
 }
 
 func (g Goclock) Time() time.Time {
     return time.Now().Add(g.Offset)
 }
 
-func (g *Goclock) initialize(request Request) {
+func (g *Goclock) initialize(request Request) error {
     g.Source = request.Url
-    offset, reliability := timeOffset(g.Source)
+    offset, reliability, err := timeOffset(g.Source)
+    if err != nil {
+        return err
+    }
     g.Offset = offset
     g.Reliability = reliability
+    return nil
 }

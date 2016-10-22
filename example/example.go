@@ -7,15 +7,19 @@ import (
 )
 
 func main() {
-    clock := goclock.New(goclock.Request{
-        Url : url(),
+    initClock(url())
+}
+
+func initClock(url string) {
+    clock, err := goclock.New(goclock.Request{
+        Url : url,
         ClientTime : clientTime(),
-    }, func (g *goclock.Goclock) {
-        fmt.Println("offset is", g.Offset)
-        fmt.Println("border is", time.Second - g.Offset)
-        fmt.Println("reliability is", g.Reliability)
     })
-    tick(*clock)
+    if err != nil {
+        fmt.Println(err)
+    } else {
+        tick(*clock)
+    }
 }
 
 func url() string {

@@ -4,7 +4,7 @@ import (
     "time"
 )
 
-func timeOffset(url string) (time.Duration, int) {
+func timeOffset(url string) (time.Duration, int, error) {
     const start = 1
     records := make([]comparison, start)
     intervals := [trial]time.Duration{
@@ -28,7 +28,7 @@ func timeOffset(url string) (time.Duration, int) {
         cmp, err := compareDelayed(url, timeToSleepFor)
         if err != nil {
             margin = int(timeToSleepFor)
-            break
+            return time.Duration(0), 0, err
         }
         reliability++;
         records = append(records, cmp)
@@ -42,10 +42,6 @@ func timeOffset(url string) (time.Duration, int) {
                 cmp.remote.Hour(), cmp.remote.Minute(),
                 cmp.remote.Second(), cmp.remote.Nanosecond())
         */
-    }
-    
-    if reliability == 0 {
-        return time.Duration(0), 0
     }
     
     nanosecOffset := records[start].client.Nanosecond()
@@ -62,5 +58,5 @@ func timeOffset(url string) (time.Duration, int) {
 	    }
     }
     _ = margin
-    return records[start].estimatedDifference(nanosecOffset /* + margin */), reliability
+    return records[start].estimatedDifference(nanosecOffset /* + margin */), reliability, nil
 }
