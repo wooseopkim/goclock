@@ -10,7 +10,7 @@ type Goclock struct {
     Source string `json:"source"`
     Offset time.Duration `json:"offset"`
     // 0 is the worst; bigger means better
-    Reliability int `json:"reliaibility"`
+    Reliability int `json:"reliability"`
 }
 
 type Request struct {
