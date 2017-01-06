@@ -59,7 +59,6 @@ func compareDelayed(url string, delay time.Duration) (comparison, error) {
     }
     
     ping[url] = elapsed - delay
-    // fmt.Printf("Supposed: %09d, Actual: %09d\n", delay, elapsed)
     if delay != immediately && delay - elapsed > permissibleMargin {
         return comparison{}, errors.New(fmt.Sprintf("Poor connection: %v", elapsed))
     }

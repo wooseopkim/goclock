@@ -23,7 +23,6 @@ func timeOffset(url string) (time.Duration, int, error) {
                 timeToSleepFor += interval
             }
         }
-        // fmt.Println("Sleep", timeToSleepFor)
         
         cmp, err := compareDelayed(url, timeToSleepFor)
         if err != nil {
@@ -32,20 +31,9 @@ func timeOffset(url string) (time.Duration, int, error) {
         }
         reliability++;
         records = append(records, cmp)
-        
-        /*
-        fmt.Printf("%02d:%02d:%02d:%09d",
-            cmp.client.Hour(), cmp.client.Minute(),
-            cmp.client.Second(), cmp.client.Nanosecond())
-        fmt.Printf(" => ")
-        fmt.Printf("%02d:%02d:%02d:%09d\n",
-                cmp.remote.Hour(), cmp.remote.Minute(),
-                cmp.remote.Second(), cmp.remote.Nanosecond())
-        */
     }
     
     nanosecOffset := records[start].client.Nanosecond()
-    // fmt.Println("(nanosecOffset + margin) equals", time.Duration(nanosecOffset + margin))
     for i, _ := range records {
 	    if 0 < i && i < len(records) - 1 && !records[i].remoteChanged(records[i + 1]) {
 	        offset := int(time.Second)
@@ -53,8 +41,6 @@ func timeOffset(url string) (time.Duration, int, error) {
 	            offset = offset / 2
 	        }
 	        nanosecOffset += offset
-	        // fmt.Println("+=", time.Duration(offset))
-            // fmt.Println("(nanosecOffset + margin) equals", time.Duration(nanosecOffset + margin))
 	    }
     }
     _ = margin
