@@ -1,44 +1,43 @@
 package goclock
 
 import (
-    "time"
+	"time"
 )
 
 const trial = 4
 
 type Goclock struct {
-    Source string `json:"source"`
-    Offset time.Duration `json:"offset"`
-    // 0 is the worst; bigger means better
-    Reliability int `json:"reliability"`
+	Source      string        `json:"source"`
+	Offset      time.Duration `json:"offset"`
+	Reliability int           `json:"reliability"`
 }
 
 type Request struct {
-    Url string
-    ClientTime time.Time
+	Url        string
+	ClientTime time.Time
 }
 
 func New(request Request) (*Goclock, error) {
-    g := &Goclock{}
-    err := g.initialize(request)
-    return g, err
+	g := &Goclock{}
+	err := g.initialize(request)
+	return g, err
 }
 
 func (g *Goclock) Initialize(request Request) error {
-    return g.initialize(request)
+	return g.initialize(request)
 }
 
 func (g Goclock) Time() time.Time {
-    return time.Now().Add(g.Offset)
+	return time.Now().Add(g.Offset)
 }
 
 func (g *Goclock) initialize(request Request) error {
-    g.Source = request.Url
-    offset, reliability, err := timeOffset(g.Source)
-    if err != nil {
-        return err
-    }
-    g.Offset = offset
-    g.Reliability = reliability
-    return nil
+	g.Source = request.Url
+	offset, reliability, err := timeOffset(g.Source)
+	if err != nil {
+		return err
+	}
+	g.Offset = offset
+	g.Reliability = reliability
+	return nil
 }
