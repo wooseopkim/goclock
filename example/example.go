@@ -24,7 +24,7 @@ func initClock(url string) {
 }
 
 func url() string {
-	return "http://m.naver.com/"
+	return "http://www.example.com/"
 }
 
 func clientTime() time.Time {
