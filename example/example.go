@@ -32,7 +32,7 @@ func clientTime() time.Time {
 }
 
 func tick(clock goclock.Goclock) {
-	for lastlySeen := clock.Time(); ; /* true */ lastlySeen = clock.Time() {
+	for lastlySeen := clock.Time(); true; lastlySeen = clock.Time() {
 		fmt.Println(lastlySeen)
 		time.Sleep(time.Second - time.Duration(lastlySeen.Nanosecond()))
 	}
