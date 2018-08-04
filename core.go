@@ -1,48 +1,126 @@
 package goclock
 
 import (
+	"errors"
+	"fmt"
 	"time"
 )
 
-func timeOffset(url string) (time.Duration, int, error) {
-	const start = 1
-	records := make([]comparison, start)
-	intervals := [trial]time.Duration{
-		time.Duration(float64(time.Second)*1.000) % time.Second,
-		time.Duration(float64(time.Second)*0.500) % time.Second,
-		time.Duration(float64(time.Second)*0.250) % time.Second,
-		time.Duration(float64(time.Second)*0.125) % time.Second,
-	}
-	margin := int(intervals[len(intervals)-1]) / 2
+type timeRecord struct {
+	local  time.Time
+	remote time.Time
+}
 
-	reliability := 0
-	for i, _ := range intervals {
-		timeToSleepFor := intervals[i]
-		if i > start && records[i].remoteChanged(records[i-1]) {
-			for _, interval := range intervals[:i] {
-				timeToSleepFor += interval
-			}
-		}
+type possibleRange struct {
+	offset time.Duration
+	length time.Duration
+}
+type request struct {
+	previous      time.Time
+	start         time.Time
+	delay         time.Duration
+	possibleRange possibleRange
+}
 
-		cmp, err := compareDelayed(url, timeToSleepFor)
-		if err != nil {
-			margin = int(timeToSleepFor)
-			return time.Duration(0), 0, err
-		}
-		reliability++
-		records = append(records, cmp)
+const dateHeaderFmt = "Mon, 02 Jan 2006 15:04:05 GMT"
+const minSleep = 50 * time.Millisecond
+
+func offset(url string) (time.Duration, error) {
+	t, r, err := secondBorder(url, time.Now())
+	if err != nil {
+		return time.Duration(0), err
 	}
 
-	nanosecOffset := records[start].client.Nanosecond()
-	for i, _ := range records {
-		if 0 < i && i < len(records)-1 && !records[i].remoteChanged(records[i+1]) {
-			offset := int(time.Second)
-			for j := 0; j < i; j++ {
-				offset = offset / 2
-			}
-			nanosecOffset += offset
-		}
+	adjusted := t.local.Add(r.offset).Add(r.length / 2)
+	expected := time.Date(
+		t.remote.Year(),
+		t.remote.Month(),
+		t.remote.Day(),
+		t.remote.Hour(),
+		t.remote.Minute(),
+		t.remote.Second()+1,
+		0,
+		t.local.Location(),
+	)
+	offset := expected.Sub(adjusted)
+
+	return offset, nil
+}
+
+func secondBorder(url string, start time.Time) (timeRecord, possibleRange, error) {
+	params := request{
+		start: start,
+		delay: 0,
+		possibleRange: possibleRange{
+			offset: 0,
+			length: time.Second,
+		},
 	}
-	_ = margin
-	return records[start].estimatedDifference(nanosecOffset /* + margin */), reliability, nil
+	t, r, err := loop(url, params)
+	if err != nil {
+		return timeRecord{}, possibleRange{}, err
+	}
+
+	return t, r, err
+}
+
+func loop(url string, r request) (timeRecord, possibleRange, error) {
+	if r.delay > 0 {
+		time.Sleep(r.delay)
+	}
+
+	d, err := fetchDate(url)
+	if err != nil {
+		return timeRecord{}, possibleRange{}, err
+	}
+	if r.delay == 0 {
+		r.previous = d
+	}
+
+	var changed bool
+	switch diff := d.Sub(r.previous); diff {
+	case 0 * time.Second:
+		changed = false
+	case 1 * time.Second:
+		changed = true
+	default:
+		msg := fmt.Sprintf("Date header changed from %v to %v", r.previous, d)
+		return timeRecord{}, possibleRange{}, errors.New(msg)
+	}
+
+	var newSleep time.Duration
+	var newOffset time.Duration
+	if changed {
+		newOffset = r.possibleRange.offset
+		newSleep = time.Second - r.possibleRange.length/2
+	} else {
+		newSleep = r.possibleRange.length / 2
+		newOffset = (r.possibleRange.offset + r.possibleRange.length) % time.Second
+	}
+	newLength := r.possibleRange.length / 2
+	newRange := possibleRange{
+		offset: newOffset,
+		length: newLength,
+	}
+
+	sleepError := time.Now().Sub(r.start) - r.delay
+	newSleep = newSleep - sleepError
+	if newSleep < minSleep || newSleep > time.Second-minSleep {
+		return timeRecord{}, newRange, nil
+	}
+
+	_, pr, err := loop(url, request{
+		previous:      d,
+		start:         time.Now(),
+		delay:         newSleep,
+		possibleRange: newRange,
+	})
+	if err != nil {
+		return timeRecord{}, newRange, nil
+	}
+
+	return timeRecord{
+		local:  r.start,
+		remote: r.previous,
+	}, pr, nil
 }

@@ -4,12 +4,9 @@ import (
 	"time"
 )
 
-const trial = 4
-
 type Goclock struct {
-	Source      string        `json:"source"`
-	Offset      time.Duration `json:"offset"`
-	Reliability int           `json:"reliability"`
+	Source string        `json:"source"`
+	Offset time.Duration `json:"offset"`
 }
 
 type Request struct {
@@ -33,11 +30,10 @@ func (g Goclock) Time() time.Time {
 
 func (g *Goclock) initialize(request Request) error {
 	g.Source = request.Url
-	offset, reliability, err := timeOffset(g.Source)
+	o, err := offset(g.Source)
 	if err != nil {
 		return err
 	}
-	g.Offset = offset
-	g.Reliability = reliability
+	g.Offset = o
 	return nil
 }
