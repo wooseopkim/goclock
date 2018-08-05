@@ -12,9 +12,9 @@ import (
 const port = 3000
 
 func TestGoclock(t *testing.T) {
-	const repeat = 100
-	const maxThreshold = 150 * time.Millisecond
-	const avgThreshold = 80 * time.Millisecond
+	const repeat = 500
+	const threshold = 250 * time.Millisecond
+	const avgThreshold = 125 * time.Millisecond
 
 	records := []time.Duration{}
 
@@ -32,7 +32,7 @@ func TestGoclock(t *testing.T) {
 		if diff < 0 {
 			diff = -diff
 		}
-		if diff > maxThreshold {
+		if diff > threshold {
 			msg := fmt.Sprintf("Error too big: %v", diff)
 			return errors.New(msg)
 		}
@@ -44,7 +44,7 @@ func TestGoclock(t *testing.T) {
 		c := make(chan error)
 		for i := 0; i < repeat; i++ {
 			go func(i int) {
-				time.Sleep(time.Second / 10)
+				time.Sleep(time.Duration(i) * 2 * time.Millisecond)
 				c <- test(offset)
 			}(i)
 		}
