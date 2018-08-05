@@ -22,7 +22,6 @@ type request struct {
 	possibleRange possibleRange
 }
 
-const dateHeaderFmt = "Mon, 02 Jan 2006 15:04:05 GMT"
 const minSleep = 50 * time.Millisecond
 
 func offset(url string) (time.Duration, time.Duration, error) {

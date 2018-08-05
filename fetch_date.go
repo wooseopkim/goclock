@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const dateHeaderFmt = "Mon, 02 Jan 2006 15:04:05 GMT"
+
 func fetchDate(url string) (time.Time, error) {
 	resp, err := http.Get(url)
 	if err != nil {
