@@ -1,6 +1,7 @@
 package goclock
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -87,13 +88,13 @@ func runServerAnd(t *testing.T, do func(time.Duration)) {
 		}
 		w.Write([]byte{})
 	})
-	defer s.Shutdown(nil)
 
 	go func() {
-		if err := s.ListenAndServe(); err != nil {
+		if err := s.ListenAndServe(); err != http.ErrServerClosed {
 			t.Error(err)
 		}
 	}()
+	defer s.Shutdown(context.Background())
 
 	do(offset)
 }
