@@ -12,7 +12,7 @@ import (
 const port = 3000
 
 func TestGoclock(t *testing.T) {
-	const repeat = 200
+	const repeat = 100
 	const maxThreshold = 150 * time.Millisecond
 	const avgThreshold = 80 * time.Millisecond
 
@@ -41,11 +41,19 @@ func TestGoclock(t *testing.T) {
 	}
 
 	runServerAnd(t, func(offset time.Duration) {
-		for i := 0; i < repeat; i = i + 1 {
-			if err := test(offset); err != nil {
+		c := make(chan error)
+		for i := 0; i < repeat; i++ {
+			go func(i int) {
+				time.Sleep(time.Second / 10)
+				c <- test(offset)
+			}(i)
+		}
+		for i := 0; i < repeat; i++ {
+			if err := <-c; err != nil {
 				t.Error(err)
 			}
 		}
+		close(c)
 
 		sum := 0
 		for _, v := range records {
@@ -58,7 +66,6 @@ func TestGoclock(t *testing.T) {
 				msg := fmt.Sprintf("Average too high: %v\n", avg)
 				t.Error(errors.New(msg))
 			}
-			fmt.Println(avg)
 		}
 	})
 }
