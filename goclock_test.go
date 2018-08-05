@@ -28,6 +28,7 @@ func TestGoclock(t *testing.T) {
 		}
 
 		diff := g.Offset - offset
+		records = append(records, diff)
 		if diff < 0 {
 			diff = -diff
 		}
@@ -35,7 +36,6 @@ func TestGoclock(t *testing.T) {
 			msg := fmt.Sprintf("Error too big: %v", diff)
 			return errors.New(msg)
 		}
-		records = append(records, diff)
 
 		return nil
 	}
@@ -54,10 +54,11 @@ func TestGoclock(t *testing.T) {
 		size := len(records)
 		if size > 0 {
 			avg := time.Duration(sum / size)
-			if avg > avgThreshold {
+			if avg > avgThreshold || (avg < 0 && -avg > avgThreshold) {
 				msg := fmt.Sprintf("Average too high: %v\n", avg)
 				t.Error(errors.New(msg))
 			}
+			fmt.Println(avg)
 		}
 	})
 }
