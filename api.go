@@ -5,8 +5,9 @@ import (
 )
 
 type Goclock struct {
-	Source string        `json:"source"`
-	Offset time.Duration `json:"offset"`
+	Source     string        `json:"source"`
+	Offset     time.Duration `json:"offset"`
+	ErrorRange time.Duration `json:"error_range"`
 }
 
 type Request struct {
@@ -24,16 +25,13 @@ func (g *Goclock) Initialize(request Request) error {
 	return g.initialize(request)
 }
 
-func (g Goclock) Time() time.Time {
-	return time.Now().Add(g.Offset)
-}
-
 func (g *Goclock) initialize(request Request) error {
 	g.Source = request.Url
-	o, err := offset(g.Source)
+	o, e, err := offset(g.Source)
 	if err != nil {
 		return err
 	}
+	g.ErrorRange = e
 	g.Offset = o
 	return nil
 }

@@ -27,7 +27,7 @@ func TestGoclock(t *testing.T) {
 			return err
 		}
 
-		diff := g.Offset - offset
+		diff := g.Offset + g.ErrorRange/2 - offset
 		records = append(records, diff)
 		if diff < 0 {
 			diff = -diff

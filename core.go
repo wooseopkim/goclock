@@ -25,13 +25,13 @@ type request struct {
 const dateHeaderFmt = "Mon, 02 Jan 2006 15:04:05 GMT"
 const minSleep = 50 * time.Millisecond
 
-func offset(url string) (time.Duration, error) {
+func offset(url string) (time.Duration, time.Duration, error) {
 	t, r, err := secondBorder(url, time.Now())
 	if err != nil {
-		return time.Duration(0), err
+		return time.Duration(0), time.Duration(0), err
 	}
 
-	adjusted := t.local.Add(r.offset).Add(r.length / 2)
+	adjusted := t.local.Add(r.offset)
 	expected := time.Date(
 		t.remote.Year(),
 		t.remote.Month(),
@@ -44,7 +44,7 @@ func offset(url string) (time.Duration, error) {
 	)
 	offset := expected.Sub(adjusted)
 
-	return offset, nil
+	return offset, r.length, nil
 }
 
 func secondBorder(url string, start time.Time) (timeRecord, possibleRange, error) {
