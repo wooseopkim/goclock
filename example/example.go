@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/linterpreteur/goclock"
+	"github.com/wooseopkim/goclock"
 )
 
 func main() {
