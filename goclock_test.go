@@ -21,7 +21,7 @@ func TestGoclock(t *testing.T) {
 
 	test := func(offset time.Duration) error {
 		g, err := New(Request{
-			Url:        fmt.Sprintf("http://localhost:%d", port),
+			URL:        fmt.Sprintf("http://localhost:%d", port),
 			ClientTime: time.Now(),
 		})
 		if err != nil {

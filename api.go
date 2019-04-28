@@ -23,7 +23,7 @@ type Goclock struct {
 // Request data is used for calculating remote time.
 type Request struct {
 	// Url is the Url from which Date header would be read.
-	Url string
+	URL string
 
 	// ClientTime is the time that will be the baseline of time comparison.
 	ClientTime time.Time
@@ -42,7 +42,7 @@ func (g *Goclock) Initialize(request Request) error {
 }
 
 func (g *Goclock) initialize(request Request) error {
-	g.Source = request.Url
+	g.Source = request.URL
 	o, e, err := offset(g.Source)
 	if err != nil {
 		return err

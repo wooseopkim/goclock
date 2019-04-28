@@ -13,7 +13,7 @@ func main() {
 
 func initClock(url string) {
 	clock, err := goclock.New(goclock.Request{
-		Url:        url,
+		URL:        url,
 		ClientTime: clientTime(),
 	})
 	if err != nil {
