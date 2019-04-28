@@ -1,34 +1,34 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"time"
 
 	"github.com/wooseopkim/goclock"
 )
 
+var url string
+
 func main() {
-	initClock(url())
+	start(url)
 }
 
-func initClock(url string) {
+func init() {
+	flag.StringVar(&url, "url", "http://example.com/", "url to fetch from")
+	flag.Parse()
+}
+
+func start(url string) {
 	clock, err := goclock.New(goclock.Request{
 		URL:        url,
-		ClientTime: clientTime(),
+		ClientTime: time.Now(),
 	})
 	if err != nil {
 		panic(err)
 	} else {
 		tick(*clock)
 	}
-}
-
-func url() string {
-	return "http://www.example.com/"
-}
-
-func clientTime() time.Time {
-	return time.Now()
 }
 
 func tick(clock goclock.Goclock) {
