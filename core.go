@@ -23,6 +23,7 @@ type request struct {
 }
 
 const minSleep = 50 * time.Millisecond
+const maxSleep = time.Second - minSleep
 
 func offset(url string) (time.Duration, time.Duration, error) {
 	t, r, err := secondBorder(url, time.Now())
@@ -31,16 +32,7 @@ func offset(url string) (time.Duration, time.Duration, error) {
 	}
 
 	adjusted := t.local.Add(r.offset)
-	expected := time.Date(
-		t.remote.Year(),
-		t.remote.Month(),
-		t.remote.Day(),
-		t.remote.Hour(),
-		t.remote.Minute(),
-		t.remote.Second()+1,
-		0,
-		t.local.Location(),
-	)
+	expected := t.remote.Add(time.Second)
 	offset := expected.Sub(adjusted)
 
 	return offset, r.length, nil
@@ -104,7 +96,7 @@ func loop(url string, r request) (timeRecord, possibleRange, error) {
 
 	sleepError := time.Now().Sub(r.start) - r.delay
 	newSleep = newSleep - sleepError
-	if newSleep < minSleep || newSleep > time.Second-minSleep {
+	if newSleep < minSleep || maxSleep < newSleep {
 		return timeRecord{}, newRange, nil
 	}
 
