@@ -45,7 +45,7 @@ func TestGoclock(t *testing.T) {
 		c := make(chan error)
 		for i := 0; i < repeat; i++ {
 			go func(i int) {
-				time.Sleep(time.Duration(i) * 2 * time.Millisecond)
+				time.Sleep(time.Duration(i) * 50 * time.Millisecond)
 				c <- test(offset)
 			}(i)
 		}
