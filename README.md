@@ -4,4 +4,4 @@
 
 ### Usage
 
-See [example.go](/example/example.go).
+See [examples](/examples).
