@@ -84,7 +84,7 @@ func runServerAnd(t *testing.T, do func(time.Duration)) {
 
 		now := time.Now()
 		w.Header()["Date"] = []string{
-			now.In(now.Location()).Add(offset).Format("Mon, 02 Jan 2006 15:04:05 GMT"),
+			now.UTC().Add(offset).Format("Mon, 02 Jan 2006 15:04:05 GMT"),
 		}
 		w.Write([]byte{})
 	})
