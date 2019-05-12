@@ -39,5 +39,5 @@ func tick(clock goclock.Goclock) {
 }
 
 func timeOf(g goclock.Goclock) time.Time {
-	return time.Now().Add(g.Offset).Add(g.ErrorRange)
+	return time.Now().Add(g.Offset - g.ErrorRange)
 }
