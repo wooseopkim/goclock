@@ -25,7 +25,8 @@ type request struct {
 const minSleep = 50 * time.Millisecond
 const maxSleep = time.Second - minSleep
 
-func offset(url string) (time.Duration, time.Duration, error) {
+// Offset returns estimated difference of clock time for the server of given URL
+func Offset(url string) (time.Duration, time.Duration, error) {
 	t, r, err := secondBorder(url, time.Now())
 	if err != nil {
 		return time.Duration(0), time.Duration(0), err

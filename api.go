@@ -2,6 +2,8 @@ package goclock
 
 import (
 	"time"
+
+	"github.com/wooseopkim/goclock/internal"
 )
 
 // Goclock is a struct to represent calculated difference in time
@@ -43,7 +45,7 @@ func (g *Goclock) Initialize(request Request) error {
 
 func (g *Goclock) initialize(request Request) error {
 	g.Source = request.URL
-	o, e, err := offset(g.Source)
+	o, e, err := goclock.Offset(g.Source)
 	if err != nil {
 		return err
 	}
